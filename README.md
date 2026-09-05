@@ -1,58 +1,124 @@
-# Virtual Store
+# Virtual Store & PL/SQL Database Management
 
-This is a simple PHP-based virtual store web application. It allows users to browse products, manage a shopping cart, and simulate purchases. The project is structured for easy setup and extension.
+[![PHP Version](https://img.shields.io/badge/PHP-7.4%20%7C%208.x-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Database](https://img.shields.io/badge/Database-Oracle%20PL%2FSQL-F80000?logo=oracle&logoColor=white)](https://www.oracle.com/database/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Features
-- Product browsing by department
-- Shopping cart management (add, remove, update, view)
-- Purchase simulation
-- User navigation components
-- Database setup and reset scripts
+A full-stack e-commerce web application designed for pet supplies and accessories. Developed as a practical integration of **PHP** with **Oracle PL/SQL**, this project demonstrates database-level business logic (triggers, stored procedures, functions, and sequences) integrated with an interactive web storefront.
+
+---
+
+## Key Features
+
+- **Department & Category Browsing**: Dynamic product navigation filtered by pet category.
+- **Persistent Shopping Cart**: Real-time cart calculations, quantity adjustment, and item removal.
+- **Purchase Simulation & Transaction Safety**: Transactional checkout with PL/SQL rollback mechanisms on errors.
+- **Database-Enforced Integrity**:
+  - **Triggers**: Automated constraint validation (preventing negative inventory stock).
+  - **Stored Procedures**: Thread-safe stock updates with `SELECT FOR UPDATE` row locks (`process_purchase`).
+  - **PL/SQL Functions**: Optimized cart totals calculation (`calculate_cart_total`).
+- **One-Click Database Reset**: Built-in scripts (`reset_db.php`, `setup.sql`) for rapid environment seeding.
+
+---
+
+## Tech Stack & Architecture
+
+- **Frontend**: HTML5, CSS3, JavaScript (Responsive UI components & navigation)
+- **Backend**: PHP (Session handling, routing, database abstraction)
+- **Database**: Oracle Database / MariaDB / MySQL compatible schema with **PL/SQL** procedural extensions
+- **Server**: Apache / Nginx / XAMPP
+
+### Database Schema
+
+```text
+┌──────────────────────┐          ┌──────────────────────┐
+│     DEPARTMENTS      │          │       PRODUCTS       │
+├──────────────────────┤          ├──────────────────────┤
+│ PK  id               │1       * │ PK  id               │
+│     name             ├─────────►│     name             │
+└──────────────────────┘          │     price            │
+                                  │     description      │
+                                  │     image_path       │
+                                  │ FK  department_id    │
+                                  │     stock            │
+                                  └──────────┬───────────┘
+                                             │ 1
+                                             │ *
+                                  ┌──────────▼───────────┐
+                                  │         CART         │
+                                  ├──────────────────────┤
+                                  │ PK  id               │
+                                  │     user_id          │
+                                  │ FK  product_id       │
+                                  │     quantity         │
+                                  └──────────────────────┘
+```
+
+---
 
 ## Project Structure
+
+```text
+├── cart/                    # Shopping cart operations (add, remove, checkout)
+├── components/              # Modular UI components (header, footer, navbars)
+├── config/                  # Database connection credentials & PDO/OCI setup
+├── departments/             # Department-specific product catalog views
+├── images/                  # Static product assets and UI icons
+├── products/                # Product management and inventory logic
+├── screenshots/             # Visual demonstration previews
+├── index.php                # Main landing page & product showcase
+├── reset_db.php             # Database reset & re-seeding utility
+├── setup.sql                # Complete PL/SQL schema, triggers, and sample data
+└── test_db.php              # Connection diagnostic script
 ```
-index.php                # Main entry point
-reset_db.php             # Script to reset the database
-setup.sql                # SQL script to set up the database schema and initial data
-test_db.php              # Script to test database connection
-cart/                    # Shopping cart operations
-components/              # Reusable UI components (navbars)
-config/                  # Database configuration
-departments/             # Department listing and browsing
-images/                  # Product images
-products/                # Product management and inventory
-```
 
-## Setup Instructions
-1. **Requirements:**
-   - PHP 7.x or higher
-   - MySQL or MariaDB
-   - Web server (e.g., Apache, XAMPP)
+---
 
-2. **Database Setup:**
-   - Import `setup.sql` into your MySQL database to create tables and insert sample data.
-   - Update `config/database.php` with your database credentials.
-   - (Optional) Use `reset_db.php` to reset the database to its initial state.
+## Installation & Setup
 
-3. **Running the Application:**
-   - Place the project folder in your web server's root directory (e.g., `htdocs` for XAMPP).
-   - Access `index.php` via your browser (e.g., `http://localhost/virtual_store/`).
+### 1. Prerequisites
+- **Web Server**: XAMPP, WampServer, or native Apache/Nginx
+- **PHP**: Version 7.4 or 8.x (ensure `oci8` or `pdo_mysql` extensions are enabled)
+- **Database**: Oracle XE / Oracle Cloud Autonomous DB / MySQL
 
-## About This Project
+### 2. Database Configuration
+1. Open your database management tool (e.g., SQL Developer, phpMyAdmin).
+2. Execute the `setup.sql` script to create tables, sequences, triggers, and seed sample products.
+3. Configure your credentials in `config/database.php`:
+   ```php
+   <?php
+   $host = 'localhost';
+   $db   = 'virtual_store';
+   $user = 'your_username';
+   $pass = 'your_password';
+   ```
 
-This project was developed as a university assignment to learn and practice PL/SQL concepts in a web application context. The backend uses SQL scripts for database setup and management, providing a practical environment for applying PL/SQL skills alongside PHP and web development.
+### 3. Running Locally
+1. Clone or copy the repository into your web server's public directory:
+   ```bash
+   # For XAMPP on Windows
+   git clone https://github.com/GalanRaduM24/animal_store_site.git C:/xampp/htdocs/animal_store_site
+   ```
+2. Start the Apache and Database services.
+3. Open your browser and navigate to:
+   ```url
+   http://localhost/animal_store_site/
+   ```
 
-## Notes
-- Product images are located in the `images/` directory.
-- The application is for demonstration and educational purposes.
+---
 
 ## Screenshots
 
-Below are example screenshots of the main pages. Replace the placeholder files in the `screenshots/` directory with actual images as needed.
+| Home Catalog | Shopping Cart |
+|:---:|:---:|
+| ![Home Page](screenshots/home.png) | ![Cart Page](screenshots/cart.png) |
 
-| Page                        | Screenshot                                      |
-|-----------------------------|-------------------------------------------------|
-| Home Page                   | ![Home Page](screenshots/home.png)         |
-| Products Page               | ![Products Page](screenshots/products.png)  |
-| Cart Page                   | ![Cart Page](screenshots/cart.png)          |
-| Inventory Page              | ![Inventory Page](screenshots/inventory.png) |
+| Product View | Inventory Management |
+|:---:|:---:|
+| ![Products Page](screenshots/products.png) | ![Inventory Page](screenshots/inventory.png) |
+
+---
+
+## Academic Context
+
+This application was developed as a university coursework project focusing on advanced database design and the integration of procedural database logic (**PL/SQL**) with modern web architectures.
