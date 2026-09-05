@@ -30,29 +30,30 @@ A full-stack e-commerce web application designed for pet supplies and accessorie
 
 ### Database Schema
 
-```text
-┌──────────────────────┐          ┌──────────────────────┐
-│     DEPARTMENTS      │          │       PRODUCTS       │
-├──────────────────────┤          ├──────────────────────┤
-│ PK  id               │1       * │ PK  id               │
-│     name             ├─────────►│     name             │
-└──────────────────────┘          │     price            │
-                                  │     description      │
-                                  │     image_path       │
-                                  │ FK  department_id    │
-                                  │     stock            │
-                                  └──────────┬───────────┘
-                                             │ 1
-                                             │ *
-                                  ┌──────────▼───────────┐
-                                  │         CART         │
-                                  ├──────────────────────┤
-                                  │ PK  id               │
-                                  │     user_id          │
-                                  │ FK  product_id       │
-                                  │     quantity         │
-                                  └──────────────────────┘
-```
+#### Departments (`departments`)
+| Column | Type | Constraints | Description |
+|:---|:---|:---|:---|
+| `id` | `NUMBER` | `PRIMARY KEY` | Unique department ID |
+| `name` | `VARCHAR2(100)` | `NOT NULL` | Department / category name |
+
+#### Products (`products`)
+| Column | Type | Constraints | Description |
+|:---|:---|:---|:---|
+| `id` | `NUMBER` | `PRIMARY KEY` | Unique product identifier |
+| `name` | `VARCHAR2(100)` | `NOT NULL` | Product name |
+| `price` | `NUMBER(10,2)` | `NOT NULL` | Item price |
+| `description` | `VARCHAR2(1000)` | `NULL` | Product details and description |
+| `image_path` | `VARCHAR2(255)` | `NULL` | Relative image asset path |
+| `department_id` | `NUMBER` | `FOREIGN KEY` | References `departments(id)` |
+| `stock` | `NUMBER` | `DEFAULT 0` | Available stock count |
+
+#### Cart (`cart`)
+| Column | Type | Constraints | Description |
+|:---|:---|:---|:---|
+| `id` | `NUMBER` | `PRIMARY KEY` | Cart item ID (from `cart_seq`) |
+| `user_id` | `NUMBER` | `NULL` | User session identifier |
+| `product_id` | `NUMBER` | `FOREIGN KEY` | References `products(id)` |
+| `quantity` | `NUMBER` | `NOT NULL` | Selected purchase quantity |
 
 ---
 
